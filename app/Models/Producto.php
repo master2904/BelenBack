@@ -33,4 +33,22 @@ class Producto extends Model
                 'productos.cantidad_minima',
                 'sucursals.direccion');
     }
+    public function scopeMeses($query,$sucursalId,$gestion,$mes){
+        $query
+            ->join('categorias','categorias.id','productos.categoria_id')
+            ->join('sucursals','sucursals.id','categorias.sucursal_id')
+            ->join('historials','historials.producto_id','productos.id')
+            ->join('ventas','ventas.id','historials.venta_id')
+            ->select(
+                DB::raw('concat(categorias.grupo," ",productos.descripcion) as name'),
+                DB::raw('count(*) as value')
+            )
+            ->where('categorias.sucursal_id',$sucursalId)
+            ->whereYear('ventas.fecha',$gestion)
+            ->whereMonth('ventas.fecha',$mes)
+            ->groupBy('productos.id')
+            ->groupBy('categorias.grupo')
+            ->groupBy('productos.descripcion');
+        return $query;
+    }
 }

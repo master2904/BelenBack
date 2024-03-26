@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuarioController;
@@ -24,6 +25,7 @@ Route::get('/categoria/sucursal/{id}', [CategoriaController::class,'listarSucurs
 Route::get('/producto/categoria/{id}', [ProductoController::class,'listadoCategoria']);
 Route::get('/producto/sucursal/{id}', [ProductoController::class,'listadoSucursal']);
 Route::get('/producto/venta/{id}', [ProductoController::class,'listadoVenta']);
+Route::get('/venta/listar/{fechaInicio}/{fechaFin}',[VentaController::class,'listarFecha']);
 
 Route::apiResource('/relacion', 'App\Http\Controllers\RelacionController');
 Route::apiResource('/detalle', 'App\Http\Controllers\DetalleController');
@@ -43,18 +45,22 @@ Route::post('/sucursal/imagen', [SucursalController::class,'imageUpload']);
 Route::post('/usuario/imagen', [UsuarioController::class,'imageUpload']);
 Route::post('/producto/imagen', [ProductoController::class,'imageUpload']);
 Route::get('/producto/detalle/{id}', [ProductoController::class,'listado']);
-Route::get('/venta/historial/{fecha}',[VentaController::class,'listar_fecha']);
 Route::get('/usuario/descargar/{master}',[UsuarioController::class,'image']);
-Route::post('/login', [UsuarioController::class,'authenticate']);
+Route::post('/login', [AuthController::class,'authenticate']);
 // Route::get("usuario/imagen/{nombre}",[UsuarioController::class,'descargar']);
 Route::get("usuario/imagen/{imagen}",[UsuarioController::class,'image']);
 Route::get("sucursal/imagen/{imagen}",[SucursalController::class,'image']);
 Route::get("producto/imagen/{imagen}",[ProductoController::class,'image']);
 // Route::get("laboratorio/imagen/{imagen}",[LaboratorioController::class,'image']);
-Route::get("venta/meses/{id}",[VentaController::class,'r_meses']);
+Route::get("venta/meses/{sucursal}/{gestion}",[VentaController::class,'meses']);
+Route::get("venta/get/{id}",[VentaController::class,'mostrar']);
 
-Route::group(['middleware' => ['jwt.verify']], function() {
-    Route::post('user','App\Http\Controllers\UsuarioController@getAuthenticatedUser');
+Route::group(['middleware' => ['auth.api']], function() {
 });
 Route::group(['middleware' => ['cors']], function () {
 });
+Route::middleware('auth:api')->group(function(){
+    Route::post('user',[AuthController::class,'getAuthenticatedUser']);
+});
+
+

@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject {
+    use Notifiable;
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -17,7 +19,8 @@ class User extends Authenticatable implements JWTSubject {
     public function getJWTCustomClaims()
     {
         return [];
-    }    use HasFactory, Notifiable;
+    }
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.

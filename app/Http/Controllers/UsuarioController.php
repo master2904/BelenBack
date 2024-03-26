@@ -7,9 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
-use JWTAuth;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Tymon\JWTAuth\Exceptions\JWTException;
+
 
 class UsuarioController extends Controller
 {
@@ -18,40 +17,7 @@ class UsuarioController extends Controller
         $users = User::Sucursal()->orderBy("apellido", "asc")->get();
         return response()->json($users,200);
     }
-    public function authenticate(Request $request)
-    {
-        // return response()->json("");
-        $credentials = $request->only('username', 'password');
-         try {
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Cuenta o Contraseña incorrecta'], 400);
-            }
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Error de coneccion'], 500);
-        }
-        $user = JWTAuth::user();
-        return  response()->json([
-            'status' => 'ok',
-            'token' => $token,
-            'user' => $user
-        ]);
-    }
 
-    public function getAuthenticatedUser()
-    {
-    try {
-        if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['user_not_found'], 404);
-        }
-        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-                return response()->json(['token_expired'], $e->getStatusCode());
-        } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-                return response()->json(['token_invalid'], $e->getStatusCode());
-        } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
-                return response()->json(['token_absent'], $e->getStatusCode());
-        }
-        return response()->json(compact('user'));
-    }
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string',
