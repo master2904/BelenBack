@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Sucursal;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -12,9 +15,13 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class UsuarioController extends Controller
 {
-    public function index()
-    {
-        $users = User::Sucursal()->orderBy("apellido", "asc")->get();
+    public function index(){
+        $user = Auth::guard('api')->user();
+        if($user->rol==2){
+            $users = User::Sucursal()->where('users.sucursal_id',$user->sucursal_id)->orderBy("apellido", "asc")->get();
+        }
+        else
+            $users = User::Sucursal()->orderBy("apellido", "asc")->get();
         return response()->json($users,200);
     }
 
@@ -87,20 +94,21 @@ class UsuarioController extends Controller
     public function update( $id,Request $request){
         $equipo=User::find($id);
         $input=$request->all();
-
         $equipo['nombre']=$request->get('nombre');
         $equipo['apellido']=$request->get('apellido');
         $equipo['username']=$request->get('username');
         $equipo['rol']=$request->get('rol');
         // $equipo['email']=$request->get('email');
-        if($input['sucursal_id']!="")
-            $equipo['sucursal_id']=$input['sucursal_id'];
+        if(isset($input['sucursal_id']))
+            if($input['sucursal_id']!="")
+                $equipo['sucursal_id']=$input['sucursal_id'];
         if($input['imagen']!="")
             $equipo['imagen']=$input['imagen'];
-        if($input['password']!=""){
-            $clave=$request->get('password');
-            $equipo['password']=Hash::make($clave);
-        }
+        if(isset($input['password']))
+            if($input['password']!=""){
+                $clave=$request->get('password');
+                $equipo['password']=Hash::make($clave);
+            }
         $equipo->save();
         return $this->index();
         // $users = User::select("*")->orderBy("apellido", "asc")->get();

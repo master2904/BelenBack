@@ -20,7 +20,7 @@ class CreateVentasTable extends Migration
             $table->unsignedBigInteger('cliente_id')->comment('Clave foranea con la tabla cliente');
             $table->foreign('cliente_id')->references('id')->on('clientes');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->date('fecha')->comment('fecha en la cual se realizo la venta');
+            $table->dateTime('fecha')->comment('fecha en la cual se realizo la venta');
             $table->float('total')->comment('total de la venta realizada');
             $table->timestamps();
         });

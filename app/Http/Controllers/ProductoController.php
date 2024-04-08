@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use App\Models\Producto;
+use App\Models\Sucursal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -52,23 +53,32 @@ class ProductoController extends Controller
     public function show($id){
         return response()->json(Producto::find($id));
     }
-    public function update(Request $request, $id){
-        $producto=Producto::find($id);
-        $categoria_id=$producto->categoria_id;
-        if (!$producto)
-            return response()->json("Este Productoo no existe",400);
-        $producto->update($request->all());
-        return response()->json($producto);
-        // return $this->listado($categoria_id);
-    }
     // public function update(Request $request, $id){
     //     $producto=Producto::find($id);
-    //     $categoria_id=$producto->categoria_id;
     //     if (!$producto)
     //         return response()->json("Este Productoo no existe",400);
     //     $producto->update($request->all());
-    //     return $this->listado($categoria_id);
+    //     return response()->json($producto);
+    //     // return $this->listado($categoria_id);
     // }
+    public function update( $id,Request $request){
+        $producto=Producto::find($id);
+        $input=$request->all();
+        $producto['descripcion']=$request->get('descripcion');
+        $producto['codigo']=$request->get('codigo');
+        $producto['stock']=$request->get('stock');
+        $producto['cantidad_minima']=$request->get('cantidad_minima');
+        $producto['precio_compra']=$request->get('precio_compra');
+        $producto['precio_venta']=$request->get('precio_venta');
+        if($input['imagen']!="")
+            $producto['imagen']=$input['imagen'];
+        $producto->save();
+        return response()->json($producto);
+        //  $this->listadoCategoria($producto->categoria_id);
+        // $users = User::select("*")->orderBy("apellido", "asc")->get();
+        // return response()->json($users,200);
+        // return response()->json(User::get(),200);
+    }
 
     public function destroy($id){
         $p=Producto::find($id);
@@ -94,6 +104,29 @@ class ProductoController extends Controller
 
     public function image($nombre){
         return response()->download(public_path('storage').'/producto/'.$nombre,$nombre);
+    }
+    public function listadoSucursales($id)
+    {
+        $sucursales=Sucursal::get();
+        $sucursalArray=[];
+        $i=0;
+        foreach($sucursales as $sucursal){
+            $answer=[];
+            $categorias=Categoria::where('sucursal_id',$sucursal->id)->get();
+            foreach($categorias as $item){
+                $producto = Producto::Todo()->where('categoria_id',$item->id)->orderBy("categorias.grupo",'asc')->get();
+                // $objeto=new stdClass;
+                // $objeto->categoria=$item->grupo;
+                // $objeto->productos=$producto;
+                array_push($answer,$producto);
+            }
+            $objeto=new stdClass;
+            $objeto->sucursales=$sucursal->numero;
+            $objeto->productos=$answer;
+            array_push($sucursalArray,$objeto);
+        }
+        // $producto = Producto::Todo()->where('sucursal_id',$id)->groupBy("categorias.grupo")->get();
+        return response()->json($sucursalArray,200);
     }
 
 }

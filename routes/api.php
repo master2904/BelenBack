@@ -13,18 +13,22 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\SucursalController;
 
-Route::apiResource('/usuario', UsuarioController::class);
+Route::middleware('auth:api')->group(function(){
+    Route::post('user',[AuthController::class,'getAuthenticatedUser']);
+    Route::apiResource('/usuario', UsuarioController::class);
+    Route::apiResource('/venta', VentaController::class);
+});
 Route::apiResource('/cliente', ClienteController::class);
 Route::apiResource('/sucursal',SucursalController::class);
 Route::apiResource('/categoria',CategoriaController::class);
 
 Route::apiResource('/producto',ProductoController::class);
 Route::apiResource('/proveedor', ProveedorController::class);
-Route::apiResource('/venta', VentaController::class);
 Route::get('/categoria/sucursal/{id}', [CategoriaController::class,'listarSucursal']);
 Route::get('/producto/categoria/{id}', [ProductoController::class,'listadoCategoria']);
 Route::get('/producto/sucursal/{id}', [ProductoController::class,'listadoSucursal']);
 Route::get('/producto/venta/{id}', [ProductoController::class,'listadoVenta']);
+Route::get('/producto/sucursales/{id}', [ProductoController::class,'listadoSucursales']);
 Route::get('/venta/listar/{fechaInicio}/{fechaFin}',[VentaController::class,'listarFecha']);
 
 Route::apiResource('/relacion', 'App\Http\Controllers\RelacionController');
@@ -59,8 +63,3 @@ Route::group(['middleware' => ['auth.api']], function() {
 });
 Route::group(['middleware' => ['cors']], function () {
 });
-Route::middleware('auth:api')->group(function(){
-    Route::post('user',[AuthController::class,'getAuthenticatedUser']);
-});
-
-

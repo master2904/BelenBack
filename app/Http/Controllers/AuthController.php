@@ -18,20 +18,21 @@ class AuthController extends Controller
     {
         // return response()->json("");
         $credentials = $request->only('username', 'password');
-        //  try {
-        //     if (! $token = JWTAuth::attempt($credentials)) {
-        //         return response()->json(['error' => 'Cuenta o Contraseña incorrecta'], 400);
-        //     }
-        // } catch (JWTException $e) {
-        //     return response()->json(['error' => 'Error de coneccion'], 500);
-        // }
+         try {
+            if (! $token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'Cuenta o Contraseña incorrecta'], 400);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Error de coneccion'], 500);
+        }
         if ($token = Auth::guard('api')->attempt($credentials)) {
             // return $this->respondWithToken($token);
         }
         $user = Auth::guard('api')->user();
+        $user->token=$token;
         return  response()->json([
-            'status' => 'ok',
-            'token' => $token,
+            // 'status' => 'ok',
+            // 'token' => $token,
             'user' => $user
         ]);
     }

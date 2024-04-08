@@ -24,14 +24,17 @@ class Producto extends Model
         $query->join('categorias','categorias.id','productos.categoria_id')
         ->join('sucursals','sucursals.id','categorias.sucursal_id')
         ->select('productos.codigo',
-                DB::raw('concat(categorias.grupo," ",productos.descripcion) as descripcion'),
+                'productos.descripcion',
                 'productos.id',
                 'productos.imagen',
                 'productos.stock',
                 'productos.precio_venta',
                 'productos.precio_compra',
                 'productos.cantidad_minima',
-                'sucursals.direccion');
+                'productos.categoria_id',
+                'sucursals.direccion',
+                'sucursals.numero',
+                'categorias.grupo as categoriaGrupo');
     }
     public function scopeMeses($query,$sucursalId,$gestion,$mes){
         $query

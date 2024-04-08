@@ -22,7 +22,7 @@ class SucursalController extends Controller
 
     public function show(Sucursal $sucursal)
     {
-        $sucursal=Sucursal::find($sucursal);
+        $sucursal=Sucursal::find($sucursal)->first();
         return response()->json($sucursal);
     }
     public function update(UpdateSucursalRequest $request, Sucursal $sucursal)

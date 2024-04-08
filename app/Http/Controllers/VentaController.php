@@ -55,7 +55,7 @@ class VentaController extends Controller
         $ventaNueva->id=0;
         $ventaNueva->user_id=$user->id;
         $ventaNueva->cliente_id=$venta['cliente_id'];
-        $ventaNueva->fecha=Carbon::now()->format('Y-m-d');
+        $ventaNueva->fecha=Carbon::now()->format('Y-m-d H:i:s');
         $ventaNueva->total=$venta['total'];
         $ventaNueva->save();
 
