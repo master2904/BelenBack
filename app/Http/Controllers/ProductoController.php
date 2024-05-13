@@ -21,10 +21,17 @@ class ProductoController extends Controller
         $productos=Producto::Todo()->where('categorias.sucursal_id',$id)->get();
         return response()->json($productos);
     }
+    public function buscar(Request $request){
+        $producto = Producto::Todo()
+                            ->where('productos.descripcion','like','%'.$request['producto'].'%')
+                            ->orWhere('categorias.grupo','like','%'.$request['producto'].'%')
+                            ->orWhere('productos.codigo','like','%'.$request['producto'].'%')
+                            ->get();
+        return response()->json($producto);
+    }
     public function listadoSucursal($id)
     {
         $categorias=Categoria::where('sucursal_id',$id)->get();
-        $i=0;
         $answer=[];
         foreach($categorias as $item){
             $producto = Producto::Todo()->where('categoria_id',$item->id)->orderBy("categorias.grupo",'asc')->get();

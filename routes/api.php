@@ -29,7 +29,8 @@ Route::get('/producto/categoria/{id}', [ProductoController::class,'listadoCatego
 Route::get('/producto/sucursal/{id}', [ProductoController::class,'listadoSucursal']);
 Route::get('/producto/venta/{id}', [ProductoController::class,'listadoVenta']);
 Route::get('/producto/sucursales/{id}', [ProductoController::class,'listadoSucursales']);
-Route::get('/venta/listar/{fechaInicio}/{fechaFin}',[VentaController::class,'listarFecha']);
+Route::post('/producto/buscar', [ProductoController::class,'buscar']);
+Route::post('/venta/listar',[VentaController::class,'listarFecha']);
 
 Route::apiResource('/relacion', 'App\Http\Controllers\RelacionController');
 Route::apiResource('/detalle', 'App\Http\Controllers\DetalleController');

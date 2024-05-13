@@ -23,9 +23,25 @@ class VentaController extends Controller
         }
         return response()->json($reportes);
     }
-    public function listarFecha($fechaInicio,$fechaFin){
+    public function listarFecha(Request $request){
+        $id=$request['id'];
+        $fechaInicio=$request['fechaInicio'];
+        $fechaFin=$request['fechaFin'];
+        $usuario=$request['usuario'];
+        $cliente=$request['cliente'];
+
+        $fechaInicio=($fechaInicio==null)?Carbon::now():Carbon::parse($fechaInicio);
+        $fechaInicio=$fechaInicio->startOfDay()->format('Y-m-d H:i:s');
+        $fechaFin=Carbon::parse($fechaFin)->endOfDay()->format('Y-m-d H:i:s');
         $i=0;
-        $ventas=Venta::Show()->whereBetween('ventas.fecha', [$fechaInicio, $fechaFin])->get();
+        $ventas=Venta::Show()->whereBetween('ventas.fecha', [$fechaInicio, $fechaFin])->where('sucursals.id',$id);
+        // return response()->json($ventas->get());
+        if($usuario!=null)
+            $ventas=$ventas->where('users.username','like','%'.$usuario.'%');
+        if($cliente!=null){
+            $ventas=$ventas->where('clientes.nit','like','%'.$cliente.'%');
+        }
+        $ventas=$ventas->orderBy('ventas.fecha','DESC')->orderBy('ventas.id','desc')->distinct()->get();
         foreach($ventas as $venta){
             $ventas[$i]->historial=Historial::Producto()->where('venta_id',$venta->id)->get();
             $i++;
