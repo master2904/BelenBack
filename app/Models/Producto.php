@@ -44,7 +44,7 @@ class Producto extends Model
             ->join('ventas','ventas.id','historials.venta_id')
             ->select(
                 DB::raw('concat(categorias.grupo," ",productos.descripcion) as name'),
-                DB::raw('count(*) as value')
+                DB::raw('sum(historials.cantidad) as value')
             )
             ->where('categorias.sucursal_id',$sucursalId)
             ->whereYear('ventas.fecha',$gestion)

@@ -23,7 +23,8 @@ class ProductoController extends Controller
     }
     public function buscar(Request $request){
         $producto = Producto::Todo()
-                            ->where('productos.descripcion','like','%'.$request['producto'].'%')
+                            ->where('productos.id',$request['producto'])
+                            ->orWhere('productos.descripcion','like','%'.$request['producto'].'%')
                             ->orWhere('categorias.grupo','like','%'.$request['producto'].'%')
                             ->orWhere('productos.codigo','like','%'.$request['producto'].'%')
                             ->get();
@@ -40,7 +41,6 @@ class ProductoController extends Controller
             $objeto->productos=$producto;
             array_push($answer,$objeto);
         }
-        // $producto = Producto::Todo()->where('sucursal_id',$id)->groupBy("categorias.grupo")->get();
         return response()->json($answer,200);
     }
     public function listadoCategoria($id)
@@ -60,14 +60,6 @@ class ProductoController extends Controller
     public function show($id){
         return response()->json(Producto::find($id));
     }
-    // public function update(Request $request, $id){
-    //     $producto=Producto::find($id);
-    //     if (!$producto)
-    //         return response()->json("Este Productoo no existe",400);
-    //     $producto->update($request->all());
-    //     return response()->json($producto);
-    //     // return $this->listado($categoria_id);
-    // }
     public function update( $id,Request $request){
         $producto=Producto::find($id);
         $input=$request->all();
@@ -81,10 +73,6 @@ class ProductoController extends Controller
             $producto['imagen']=$input['imagen'];
         $producto->save();
         return response()->json($producto);
-        //  $this->listadoCategoria($producto->categoria_id);
-        // $users = User::select("*")->orderBy("apellido", "asc")->get();
-        // return response()->json($users,200);
-        // return response()->json(User::get(),200);
     }
 
     public function destroy($id){
@@ -122,9 +110,6 @@ class ProductoController extends Controller
             $categorias=Categoria::where('sucursal_id',$sucursal->id)->get();
             foreach($categorias as $item){
                 $producto = Producto::Todo()->where('categoria_id',$item->id)->orderBy("categorias.grupo",'asc')->get();
-                // $objeto=new stdClass;
-                // $objeto->categoria=$item->grupo;
-                // $objeto->productos=$producto;
                 array_push($answer,$producto);
             }
             $objeto=new stdClass;
@@ -132,10 +117,6 @@ class ProductoController extends Controller
             $objeto->productos=$answer;
             array_push($sucursalArray,$objeto);
         }
-        // $producto = Producto::Todo()->where('sucursal_id',$id)->groupBy("categorias.grupo")->get();
         return response()->json($sucursalArray,200);
     }
-
 }
-
-
