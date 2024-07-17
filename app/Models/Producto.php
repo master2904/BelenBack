@@ -34,7 +34,8 @@ class Producto extends Model
                 'productos.categoria_id',
                 'sucursals.direccion',
                 'sucursals.numero',
-                'categorias.grupo as categoriaGrupo');
+                'categorias.grupo as categoriaGrupo',
+                'categorias.codigo as cod');
     }
     public function scopeMeses($query,$sucursalId,$gestion,$mes){
         $query

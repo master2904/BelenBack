@@ -11,10 +11,11 @@ class Categoria extends Model
     protected $fillable = [
         'id',
         'grupo',
+        'codigo',
         'sucursal_id'
     ];
     public function scopeSucursal($query,$sucursalId){
         return $query->join('sucursals','sucursals.id','sucursal_id')
-        ->select('categorias.id','categorias.grupo','categorias.sucursal_id');
+        ->select('categorias.id','categorias.grupo','categorias.sucursal_id','categorias.codigo');
     }
 }
