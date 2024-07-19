@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ConcursoController;
 use App\Http\Controllers\DetalleController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\VentaController;
@@ -21,6 +22,7 @@ Route::middleware('auth:api')->group(function(){
 Route::apiResource('/cliente', ClienteController::class);
 Route::apiResource('/sucursal',SucursalController::class);
 Route::apiResource('/categoria',CategoriaController::class);
+Route::apiResource('/item', ItemController::class);
 
 Route::apiResource('/producto',ProductoController::class);
 Route::apiResource('/proveedor', ProveedorController::class);
@@ -37,7 +39,7 @@ Route::apiResource('/detalle', 'App\Http\Controllers\DetalleController');
 Route::apiResource('/tipo', 'App\Http\Controllers\TipoController');
 Route::apiResource('/venta', 'App\Http\Controllers\VentaController');
 Route::apiResource('/maquina', 'App\Http\Controllers\MaquinaController');
-Route::apiResource('/proveedor', 'App\Http\Controllfgers\VendorController');
+Route::apiResource('/proveedor', 'App\Http\Controllers\ProveedorController');
 Route::apiResource('/problema', 'App\Http\Controllers\ProblemaController');
 Route::post('/detalle/delete', [DetalleController::class,'delete']);
 Route::get('/detalle/venta/{id}',[DetalleController::class,'lista_venta']);

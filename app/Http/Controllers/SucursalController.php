@@ -28,6 +28,7 @@ class SucursalController extends Controller
     public function update(UpdateSucursalRequest $request, Sucursal $sucursal)
     {
         $sucursal=Sucursal::find($sucursal['id']);
+        $request['imagen']=($request['imagen']==null?$sucursal->imagen:$request['imagen']);
         $sucursal->update($request->all());
         return $this->index();
     }

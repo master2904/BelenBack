@@ -14,4 +14,9 @@ class Item extends Model
         'producto_id',
         'nuevo'
     ];
+    public function scopeItemProveedor($query,$id){
+        return $query
+            ->join('proveedors','proveedors.id','items.proveedor_id')
+            ->where('proveedors.id',$id);
+    }
 }
