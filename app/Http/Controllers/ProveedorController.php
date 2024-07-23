@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\Producto;
 use App\Models\Proveedor;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
@@ -28,7 +29,8 @@ class ProveedorController extends Controller
         $item=Proveedor::find($id);
         $items=Item::where('proveedor_id',$item->id)->get();
         $item->items=$items;
-        return response()->json($item);
+        $productos=Producto::Todo()->orderBy("categorias.grupo", "asc")->get();
+        return response()->json([$item,$productos]);
     }
     public function update(Request $request, $id)
     {

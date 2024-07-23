@@ -12,7 +12,8 @@ class Item extends Model
         'id',
         'proveedor_id',
         'producto_id',
-        'nuevo'
+        'nuevo',
+        'precio'
     ];
     public function scopeItemProveedor($query,$id){
         return $query
