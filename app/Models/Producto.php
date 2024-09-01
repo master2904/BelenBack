@@ -55,4 +55,7 @@ class Producto extends Model
             ->groupBy('productos.descripcion');
         return $query;
     }
+    public function scopeAll($query){
+        return $query->select('productos.*')->get();
+    }
 }

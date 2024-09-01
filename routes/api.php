@@ -18,6 +18,7 @@ Route::middleware('auth:api')->group(function(){
     Route::post('user',[AuthController::class,'getAuthenticatedUser']);
     Route::apiResource('/usuario', UsuarioController::class);
     Route::apiResource('/venta', VentaController::class);
+    Route::put('/producto/actualizar/{id}', [ProductoController::class,'actualizarstok']);
 });
 Route::apiResource('/cliente', ClienteController::class);
 Route::apiResource('/sucursal',SucursalController::class);
@@ -33,6 +34,7 @@ Route::get('/producto/venta/{id}', [ProductoController::class,'listadoVenta']);
 Route::get('/producto/sucursales/{id}', [ProductoController::class,'listadoSucursales']);
 Route::post('/producto/buscar', [ProductoController::class,'buscar']);
 Route::post('/venta/listar',[VentaController::class,'listarFecha']);
+Route::get('/producto/actualizarLogs/{id}', [ProductoController::class,'actualizarLogs']);
 
 Route::apiResource('/relacion', 'App\Http\Controllers\RelacionController');
 Route::apiResource('/detalle', 'App\Http\Controllers\DetalleController');

@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
+use App\Models\Cliente;
+use App\Models\historial;
 use App\Models\Producto;
+use App\Models\ProductosLog;
 use App\Models\Sucursal;
+use App\Models\Venta;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use stdClass;
@@ -54,7 +60,10 @@ class ProductoController extends Controller
             'descripcion' => 'required',
             'imagen' => 'required',
         ]);
-        Producto::create($request->all());
+        $item=Producto::create($request->all());
+        $user = Auth::guard('api')->user();
+        $fecha=Carbon::now()->format('Y-m-d H:i:s');
+        $this->addLogs($item,$user,'Primer Ingreso del producto',$item->stock,0,$fecha);
         return $this->listadoCategoria($categoria_id);
     }
     public function show($id){
@@ -65,7 +74,7 @@ class ProductoController extends Controller
         $input=$request->all();
         $producto['descripcion']=$request->get('descripcion');
         $producto['codigo']=$request->get('codigo');
-        $producto['stock']=$request->get('stock');
+        $producto['stock']=$producto['stock']+$request->get('stock');
         $producto['cantidad_minima']=$request->get('cantidad_minima');
         $producto['precio_compra']=$request->get('precio_compra');
         $producto['precio_venta']=$request->get('precio_venta');
@@ -74,7 +83,21 @@ class ProductoController extends Controller
         $producto->save();
         return response()->json($producto);
     }
-
+    public function actualizarstok($id,Request $request){
+            $user = Auth::guard('api')->user();
+            $ingreso=0;
+            $egreso=0;
+            $descripcion='Ingreso de '.$request->get('stock').' unidades';
+            $ingreso=$request->get('stock');
+            $producto=Producto::find($id);
+            $producto['stock']=$producto['stock']+$request->get('stock');
+            $producto['precio_compra']=$request->get('precio_compra');
+            $producto['precio_venta']=$request->get('precio_venta');
+            $producto->save();
+            $fecha=Carbon::now()->format('Y-m-d H:i:s');
+            $this->addLogs($producto,$user,$descripcion,$ingreso,$egreso,$fecha);
+            return response()->json($producto);
+    }
     public function destroy($id){
         $p=Producto::find($id);
         $categoria_id=$p['categoria_id'];
@@ -118,5 +141,34 @@ class ProductoController extends Controller
             array_push($sucursalArray,$objeto);
         }
         return response()->json($sucursalArray,200);
+    }
+    public function addLogs($item,$user,$descripcion,$ingreso,$egreso,$fecha){
+        ProductosLog::create([
+            'producto_id'=>$item->id,
+            'user_id'=>$user->id,
+            'descripcion'=>$descripcion,
+            'ingreso'=>$ingreso,
+            'egreso'=>$egreso,
+            'fecha'=>$fecha,
+        ]);
+    }
+    public function actualizarLogs($id){
+        $productos=Producto::All();
+        // dd($productos);
+        foreach($productos as $item){
+            $historial = historial::where('producto_id',$item->id)->get()->first();
+            $sumaCantidad = historial::where('producto_id', $item->id)->sum('cantidad');
+            if($historial!=null){
+                $venta=Venta::where('id',$historial->venta_id)->get()->first();
+                ProductosLog::create([
+                    'producto_id'=>$item->id,
+                    'user_id'=>$venta->user_id,
+                    'descripcion'=>'Primer Ingreso del producto',
+                    'ingreso'=>$item->stock+$sumaCantidad,
+                    'egreso'=>0,
+                    'fecha'=>Carbon::parse($item->created_at)->format('Y-m-d H:i:s')
+                ]);
+            }
+        }
     }
 }

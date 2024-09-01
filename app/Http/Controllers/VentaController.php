@@ -85,6 +85,9 @@ class VentaController extends Controller
             $producto=Producto::find($item->producto_id);
             $producto->stock-=$item->cantidad;
             $producto->save();
+            $client = Cliente::find($ventaNueva->cliente_id);
+            $descripcion='Venta de producto a '.$client->nombre;
+            (new ProductoController)->addLogs($producto,$user,$descripcion,0,$item->cantidad,$ventaNueva->fecha);
         }
         return $this->buscar($ventaNueva->id);
     }
