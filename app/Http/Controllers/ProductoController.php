@@ -8,6 +8,7 @@ use App\Models\historial;
 use App\Models\Producto;
 use App\Models\ProductosLog;
 use App\Models\Sucursal;
+use App\Models\User;
 use App\Models\Venta;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -67,7 +68,17 @@ class ProductoController extends Controller
         return $this->listadoCategoria($categoria_id);
     }
     public function show($id){
-        return response()->json(Producto::find($id));
+        return response()->json(Producto::Todo()->where('productos.id',$id)->first());
+    }
+    public function verlog($id){
+        $producto=Producto::Todo()->where('productos.id',$id)->get()->first();
+        $items=ProductosLog::where('producto_id',$id)->get();
+        foreach($items as $item){
+            $item->producto_id= $producto->categoriaGrupo.' '.$producto->descripcion;
+            $user=User::find($item->user_id);
+            $item->user_id=$user->username;
+        }
+        return response()->json($items);
     }
     public function update( $id,Request $request){
         $producto=Producto::find($id);
@@ -87,7 +98,7 @@ class ProductoController extends Controller
             $user = Auth::guard('api')->user();
             $ingreso=0;
             $egreso=0;
-            $descripcion='Ingreso de '.$request->get('stock').' unidades';
+            $descripcion='Ingreso de '.$request->get('stock').' unidades por actualizacion de stock';
             $ingreso=$request->get('stock');
             $producto=Producto::find($id);
             $producto['stock']=$producto['stock']+$request->get('stock');

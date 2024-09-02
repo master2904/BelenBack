@@ -34,6 +34,7 @@ Route::get('/producto/venta/{id}', [ProductoController::class,'listadoVenta']);
 Route::get('/producto/sucursales/{id}', [ProductoController::class,'listadoSucursales']);
 Route::post('/producto/buscar', [ProductoController::class,'buscar']);
 Route::post('/venta/listar',[VentaController::class,'listarFecha']);
+Route::get('/producto/verlog/{id}', [ProductoController::class,'verlog']);
 Route::get('/producto/actualizarLogs/{id}', [ProductoController::class,'actualizarLogs']);
 
 Route::apiResource('/relacion', 'App\Http\Controllers\RelacionController');
