@@ -112,6 +112,12 @@ class ProductoController extends Controller
     public function destroy($id){
         $p=Producto::find($id);
         $categoria_id=$p['categoria_id'];
+        $logs=ProductosLog::where('producto_id',$id)->get();
+        if($logs->count() > 0){
+            foreach ($logs as $item){
+                $item->delete();
+            }
+        }
         $p->delete();
         return $this->listadoCategoria($categoria_id);
     }
